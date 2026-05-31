@@ -1,0 +1,31 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# virtualenv
+venv/
+.venv/
+env/
+
+# =========================
+# Dataset
+# =========================
+data/
+data/cifar-10-batches-py
+data/cifar-10-python.tar.gz
+
+# =========================
+# Cython build
+# =========================
+build/
+dist/
+*.so
+*.c
+*.cpp
+
+# compiled extensions
+*.pyd
