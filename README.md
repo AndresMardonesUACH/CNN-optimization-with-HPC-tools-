@@ -53,7 +53,7 @@ CNN-optimization-with-HPC-tools/
 │   ├── benchmark.py
 │   └── setup.py
 │
-├── v4_jax_gpu/
+├── v4_jax_parallel_gpu/
 │   ├── layers/
 │   ├── model.py
 │   ├── train.py
