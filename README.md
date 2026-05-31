@@ -1,78 +1,138 @@
-# CNN-HPC
+# CNN Optimization with HPC Tools
 
-Proyecto de optimización de una Red Neuronal Convolucional (CNN) utilizando técnicas de High Performance Computing (HPC).  
-El objetivo es implementar y comparar distintas versiones de entrenamiento e inferencia de una CNN, evaluando rendimiento, paralelización y aceleración.
+Proyecto académico orientado a la optimización de una Red Neuronal Convolucional (CNN) para clasificación de imágenes mediante técnicas de High Performance Computing (HPC).
+
+El objetivo fue implementar y comparar distintas estrategias de optimización aplicadas al entrenamiento de una CNN, evaluando rendimiento computacional, paralelización y aceleración sobre CPU y GPU.
+
+---
+
+## Descripción
+
+Se desarrolló una CNN simple para clasificación sobre el dataset CIFAR-10 y se implementaron cuatro versiones equivalentes:
+
+1. **Python base**
+   Implementación utilizando bucles explícitos en Python como línea base de comparación.
+
+2. **Vectorización con NumPy**
+   Reemplazo de operaciones iterativas por operaciones vectorizadas (`tensordot`, `sliding_window_view`, `outer`, etc.).
+
+3. **Paralelización en CPU con Cython + OpenMP**
+   Optimización de la capa de convolución mediante compilación y paralelización multinúcleo.
+
+4. **GPU con JAX**
+   Ejecución acelerada mediante JIT compilation y procesamiento paralelo en GPU.
+
+El estudio compara el rendimiento de cada versión y analiza el impacto de distintas técnicas HPC aplicadas a redes convolucionales.
 
 ---
 
 ## Estructura del proyecto
 
 ```text
-cnn-hpc/
+CNN-optimization-with-HPC-tools/
 │
 ├── data/
-│   ├── raw/              # Dataset original
-│   ├── processed/        # Datos preprocesados
-│   └── downloads/        # Descargas automáticas del dataset
+│   └── CIFAR-10
 │
-├── src/
-│   ├── train.py          # Entrenamiento principal
-│   ├── model.py          # Arquitectura de la CNN
-│   └── dataset.py        # Carga y preprocesamiento del dataset
+├── v1_python_base/
+│   ├── layers/
+│   ├── model.py
+│   ├── train.py
+│   └── benchmark.py
 │
-├── requirements.txt      # Dependencias del proyecto
+├── v2_numpy_vectorized/
+│   ├── layers/
+│   ├── model.py
+│   ├── train.py
+│   └── benchmark.py
+│
+├── v3_cython_parallel_cpu/
+│   ├── layers/
+│   ├── model.py
+│   ├── train.py
+│   ├── benchmark.py
+│   └── setup.py
+│
+├── v4_jax_gpu/
+│   ├── layers/
+│   ├── model.py
+│   ├── train.py
+│   └── benchmark.py
+│
+├── requirements.txt
+├── benchmark_cnn_hpc_metricas.xlsx
+├── informe.pdf
 └── README.md
 ```
 
 ---
 
-## Objetivos del proyecto
+## Dataset
 
-- Implementar una CNN base para clasificación de imágenes.
-- Comparar distintas estrategias de optimización.
-- Medir tiempos de entrenamiento e inferencia.
-- Aplicar técnicas HPC como:
-  - Paralelización en CPU
-  - Uso de GPU
-  - Vectorización
-  - JIT compilation
-  - Batch processing
+Se utilizó:
+
+* CIFAR-10
+
+Imágenes:
+
+```text
+32 x 32 x 3
+```
+
+Clases:
+
+```text
+10
+```
+
+Fuente:
+
+[CIFAR-10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html?utm_source=chatgpt.com)
 
 ---
 
-## Dataset
+## Arquitectura de la CNN
 
-El proyecto utilizará un dataset de clasificación de imágenes.  
-Inicialmente se trabajará con:
-
-- CIFAR-10
-
-Los datasets se almacenan en:
+Arquitectura utilizada en las cuatro versiones:
 
 ```text
-data/raw/
+Input (32x32x3)
+→ ConvLayer (8 filtros, 3x3)
+→ ReLU
+→ MaxPool (2x2)
+→ Dense
+→ Softmax
+```
+
+Salida:
+
+```text
+10 clases
 ```
 
 ---
 
 ## Requisitos
 
-- Python 3.11 o superior
-- pip
-- Entorno virtual (`venv`)
+* Python 3.11+
+* pip
+* entorno virtual
+* compilador C/C++ (para Cython)
+* OpenMP
+* CUDA + GPU NVIDIA (opcional, para JAX)
 
 ---
 
 ## Instalación
 
-### 1. Clonar el repositorio
+Clonar repositorio:
 
 ```bash
-git clone https://github.com/AndresMardonesUACH/CNN-optimization-with-HPC-tools-.git
-cd cnn-hpc
+git clone https://github.com/AndresMardonesUACH/CNN-optimization-with-HPC-tools.git
+cd CNN-optimization-with-HPC-tools
 ```
 
-### 2. Crear entorno virtual
+Crear entorno virtual:
 
 Linux / WSL:
 
@@ -88,7 +148,7 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Instalar dependencias
+Instalar dependencias:
 
 ```bash
 pip install -r requirements.txt
@@ -96,49 +156,85 @@ pip install -r requirements.txt
 
 ---
 
-## Ejecución
+## Compilar Cython
 
-Entrenar la CNN:
+Para la versión CPU paralela:
 
 ```bash
-python src/train.py
+cd v3_cython_parallel_cpu
+python setup.py build_ext --inplace
 ```
 
 ---
 
-## Tecnologías consideradas
+## Ejecutar benchmarks
 
-Dependiendo de la etapa del proyecto, se evaluará el uso de:
+Python base:
 
-- NumPy
-- PyTorch
-- JAX
-- Cython
+```bash
+python v1_python_base/benchmark.py
+```
+
+NumPy:
+
+```bash
+python v2_numpy_vectorized/benchmark.py
+```
+
+Cython CPU:
+
+```bash
+OMP_NUM_THREADS=4 python v3_cython_parallel_cpu/benchmark.py
+```
+
+JAX GPU:
+
+```bash
+python v4_jax_gpu/benchmark.py
+```
 
 ---
 
-## Métricas a evaluar
+## Métricas evaluadas
 
-- Accuracy
-- Loss
-- Tiempo de entrenamiento
-- Tiempo de inferencia
-- Uso de CPU/GPU
-- Escalabilidad
+Se midieron:
+
+* tiempo de convolución
+* forward pass completo
+* entrenamiento completo
+* accuracy
+* loss
+* speedup respecto a Python base
 
 ---
 
-## Posibles etapas de optimización
+## Resultados generales
 
-1. Implementación base en Python
-2. Vectorización con NumPy
-3. Optimización con Cython
-4. Paralelización en CPU
-5. Aceleración con GPU
-6. Comparación de rendimiento
+Resumen:
+
+* Python base presentó el mayor tiempo de ejecución.
+* NumPy obtuvo la mayor aceleración en operaciones vectorizables.
+* Cython mejoró significativamente el rendimiento en CPU multinúcleo.
+* JAX mostró mejor aprovechamiento del paralelismo sobre GPU en entrenamiento completo.
+
+Conclusión principal:
+
+> La vectorización redujo drásticamente el costo computacional y el uso de técnicas HPC permitió acelerar el entrenamiento de la CNN en varios órdenes de magnitud respecto a la implementación base.
+
+---
+
+## Tecnologías utilizadas
+
+* Python
+* NumPy
+* Cython
+* JAX
+* OpenMP
+* CIFAR-10
 
 ---
 
 ## Autor
 
-Andrés Mardones Domcke, estudiante de Ingeniería Civil en Informática.
+Andrés Mardones Domcke
+Ingeniería Civil en Informática
