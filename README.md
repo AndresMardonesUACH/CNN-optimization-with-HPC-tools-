@@ -34,7 +34,7 @@ CNN-optimization-with-HPC-tools/
 ├── data/
 │   └── CIFAR-10
 │
-├── v1_python_base/
+├── v1_baseline_python/
 │   ├── layers/
 │   ├── model.py
 │   ├── train.py
