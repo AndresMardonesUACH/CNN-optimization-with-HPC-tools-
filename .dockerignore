@@ -1,0 +1,32 @@
+.git
+.gitignore
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.vscode/
+.idea/
+
+*.log
+
+benchmark_cnn_hpc_metricas.xlsx
+informe.pdf
+
+*.tar
+*.zip
+
+# Cachés
+.pytest_cache/
+.mypy_cache/
+
+# Datos temporales
+tmp/
+temp/
+
+# Resultados
+results/
+outputs/
+
+data/

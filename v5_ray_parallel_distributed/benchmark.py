@@ -1,10 +1,36 @@
-import argparse
 import time
-from memory_profiler import memory_usage
-from dataset import load_cifar10
+from torchvision import datasets
 from model import CNN
+import numpy as np
+import argparse
+from memory_profiler import memory_usage
+import ray
 
-x_train, y_train, _, _ = load_cifar10()
+
+
+def load_cifar10():
+
+    train_dataset = datasets.CIFAR10(
+        root="./data",
+        train=True,
+        download=True
+    )
+
+    x_train = np.array(
+        train_dataset.data,
+        dtype=np.float32
+    ) / 255.0
+
+    y_train = np.array(
+        train_dataset.targets,
+        dtype=np.int32
+    )
+    
+
+    return x_train, y_train
+
+ray.init()
+x_train, y_train = load_cifar10()
 model = CNN()
 
 def benchmark_train(n_images):

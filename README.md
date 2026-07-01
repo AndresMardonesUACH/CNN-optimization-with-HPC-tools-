@@ -22,6 +22,9 @@ Se desarrolló una CNN simple para clasificación sobre el dataset CIFAR-10 y se
 4. **GPU con JAX**
    Ejecución acelerada mediante JIT compilation y procesamiento paralelo en GPU.
 
+5. **Distribuida con RAY**
+   Utilizando una tecnología de coordinación con diferentes workers, cada uno encargado de las convoluciones de cada filtro.
+
 El estudio compara el rendimiento de cada versión y analiza el impacto de distintas técnicas HPC aplicadas a redes convolucionales.
 
 ---
@@ -58,10 +61,17 @@ CNN-optimization-with-HPC-tools/
 │   ├── model.py
 │   ├── train.py
 │   └── benchmark.py
+|
+├── v5_ray_parallel_distributed/
+│   ├── layers/
+│   ├── model.py
+│   ├── train.py
+│   └── benchmark.py
 │
 ├── requirements.txt
 ├── benchmark_cnn_hpc_metricas.xlsx
 ├── informe.pdf
+├── Dockerfile
 └── README.md
 ```
 
@@ -167,30 +177,104 @@ python setup.py build_ext --inplace
 
 ---
 
+# Docker
+
+También es posible ejecutar el proyecto mediante Docker, evitando instalar manualmente las dependencias.
+
+## Opción 1: Construir la imagen localmente
+
+Desde la raíz del proyecto:
+
+```bash
+docker build -t cnn-hpc:1.0 .
+```
+
+Verificar la imagen:
+
+```bash
+docker images
+```
+
+Ejecutar un contenedor interactivo:
+
+```bash
+docker run --rm -it cnn-hpc:1.0
+```
+
+---
+
+## Opción 2: Descargar la imagen desde Docker Hub
+
+Descargar la imagen:
+
+```bash
+docker pull andresmardones/cnn-hpc:1.0
+```
+
+Ejecutar:
+
+```bash
+docker run --rm -it andresmardones/cnn-hpc:1.0
+```
+
+---
+
+## Opción 3: Utilizar una imagen exportada (.tar)
+
+Desde el archivo `cnn-hpc-1.0.tar`, cargar la imagen:
+
+```bash
+docker load -i cnn-hpc-1.0.tar
+```
+
+Verificar que fue cargada:
+
+```bash
+docker images
+```
+
+Ejecutar:
+
+```bash
+docker run --rm -it cnn-hpc:1.0
+```
+
+---
+
 ## Ejecutar benchmarks
+
+Para ejecutar se necesitan 3 argumentos: Modo, Etapa y número de imágenes
+   - Modo: `tiempo` `memoria` `energia`
+   - Etapa: `conv` `forward` `train`
 
 Python base:
 
 ```bash
-python v1_python_base/benchmark.py
+python v1_baseline_python/benchmark.py [modo] [etapa] [N]
 ```
 
 NumPy:
 
 ```bash
-python v2_numpy_vectorized/benchmark.py
+python v2_numpy_vectorized/benchmark.py [modo] [etapa] [N]
 ```
 
 Cython CPU:
 
 ```bash
-OMP_NUM_THREADS=4 python v3_cython_parallel_cpu/benchmark.py
+python v3_cython_parallel_cpu/benchmark.py [modo] [etapa] [N]
 ```
 
 JAX GPU:
 
 ```bash
-python v4_jax_gpu/benchmark.py
+python v4_jax_gpu/benchmark.py [modo] [etapa] [N]
+```
+
+RAY:
+
+```bash
+python v5_ray_parallel_distributed/benchmark.py [modo] [etapa] [N]
 ```
 
 ---
@@ -230,6 +314,7 @@ Conclusión principal:
 * Cython
 * JAX
 * OpenMP
+* Ray
 * CIFAR-10
 
 ---
