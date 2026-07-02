@@ -219,28 +219,6 @@ docker run --rm -it andresmardones/cnn-hpc:1.0
 
 ---
 
-## Opción 3: Utilizar una imagen exportada (.tar)
-
-Desde el archivo `cnn-hpc-1.0.tar`, cargar la imagen:
-
-```bash
-docker load -i cnn-hpc-1.0.tar
-```
-
-Verificar que fue cargada:
-
-```bash
-docker images
-```
-
-Ejecutar:
-
-```bash
-docker run --rm -it cnn-hpc:1.0
-```
-
----
-
 ## Ejecutar benchmarks
 
 Para ejecutar se necesitan 3 argumentos: Modo, Etapa y número de imágenes
@@ -286,9 +264,8 @@ Se midieron:
 * tiempo de convolución
 * forward pass completo
 * entrenamiento completo
-* accuracy
-* loss
-* speedup respecto a Python base
+* energía
+* memoria
 
 ---
 
@@ -300,6 +277,7 @@ Resumen:
 * NumPy obtuvo la mayor aceleración en operaciones vectorizables.
 * Cython mejoró significativamente el rendimiento en CPU multinúcleo.
 * JAX mostró mejor aprovechamiento del paralelismo sobre GPU en entrenamiento completo.
+* RAY presenta claros problemas de sincronización frente a lo simple de la convolución. Aun así mejora la versión base.
 
 Conclusión principal:
 
